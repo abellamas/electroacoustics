@@ -11,7 +11,7 @@ def find_value(data, value):
     
     return index, value 
 
-resp_df = pd.read_csv('datos/rta_freq_ecm8000.txt', sep='\t', header=None)
+resp_df = pd.read_csv('datos/rta_freq_sm57.txt', sep='\t', header=None)
 resp_values = resp_df.to_numpy() #Para tener los datos numericos en un array
 
 # Frecuencia ---- Magnitud ---- Fase ---- Coherencia
@@ -55,11 +55,11 @@ size_x = size_y*(1+np.sqrt(5))/2
 fig = plt.figure(figsize=(size_x, size_y))
 plt.semilogx(frecuencia, mag_suavizada)
 plt.xticks(f_values_x, f_xticks, rotation=45)
-plt.xlim(20, 20000)
-plt.ylim(-6, 6)
+plt.xlim(80, 20000)
+plt.ylim(-10, 10)
 plt.xlabel('Frecuencia [Hz]')
 plt.ylabel('Magnitud [dB]')
 plt.grid()
-plt.savefig("img/ECM8000_rta_freq.png")
+plt.savefig("img/SM57_rta_freq.png")
 
 # print(A)
