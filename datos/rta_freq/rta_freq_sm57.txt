@@ -1,5 +1,3 @@
-	SM57_TF		
-Frequency (Hz)	Magnitude (dB)	Phase (degrees)	Coherence
 2.929688	-62.66	-143.72	0.84
 5.859375	-63.58	-128.93	0.97
 8.789063	-50.57	164.91	0.82

@@ -1,5 +1,3 @@
-	ECM8000_TF		
-Frequency (Hz)	Magnitude (dB)	Phase (degrees)	Coherence
 2.929688	-27.66	150.35	0.98
 5.859375	-25.98	134.16	0.91
 8.789063	-23.47	123.64	0.88
