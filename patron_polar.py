@@ -1,0 +1,77 @@
+import os
+import pandas as pd
+import numpy as np
+import matplotlib as plt
+from respuesta_frecuencia import get_data_smaart, find_value
+from suavizado import suavizado
+
+
+def list_files_in_directory(directory):
+    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+def sum_energy(frequency, magnitude, f_central, oct):
+    if len(frequency) != len(magnitude):
+        raise Exception("frequency and magnitude they must be the same length")
+    
+    if oct == 0:
+        raise Exception("The octave must be 3, 12 or 24 not 0")
+    else:
+        ampsmooth_db = np.zeros(np.size(magnitude))
+        finf = f_central / pow(2, 1 / (2 * oct))  # calcula el corte inferior
+        fsup = f_central * pow(2, 1 / (2 * oct))  # calcula el corte superior
+        
+        idx = np.logical_and(
+                frequency >= finf, frequency <= fsup
+            )  # busca los elementos dentro del rango de frecuencias
+        
+        energy = pow(10, magnitude[idx] / 10)
+        mag_avg = 10 * np.log10(sum(energy) / len(energy))
+        
+        return mag_avg
+
+
+
+def main():
+    # Usage
+    dir_ecm8000 = "datos/patron_polar/ECM8000_TF_0"
+    dir_sm57 = "datos/patron_polar/SM57_TF_0"
+    files_ecm8000 = list_files_in_directory(dir_ecm8000)
+    files_ecm8000.sort()
+    files_sm57 = list_files_in_directory(dir_ecm8000)
+    tf_ecm8000 = {} # diccionario donde se guardará cada medicion con nombre del archivo como clave y en valores una tupla de freq, mag y pha
+    # print(files_ecm8000)
+    
+    # lectura de archivos
+    for tf in files_ecm8000:
+        tf_data = get_data_smaart(dir_ecm8000, tf)
+        tf_ecm8000[tf[13:-4]] = tf_data    #hardcoding de 13:-4 para el ECM8000 y ?:-4 para el SM57
+
+    # ordenamiento para lectura de los archivos de 0 a 180
+    azimuth_list = list(map(int, list(tf_ecm8000.keys())))
+    azimuth_list.sort()
+    azimuth_list = list(map(str, azimuth_list))
+    
+    # calculo de la magnitud en la frecuencia de interes, por tercio de octava
+    mag_per_azimuth = {}
+    for azimuth in azimuth_list:
+        # magnitudes = tf_ecm8000[azimuth]
+        # for tf in tf_ecm8000:
+        mag_per_azimuth[azimuth] = sum_energy(tf_ecm8000[azimuth][0], tf_ecm8000[azimuth][1], 1000, 3)
+    
+    # separacion en dos arrays uno con los angulos y otro con las magnitudes
+    azimuth_value = list(map(int, list(mag_per_azimuth.keys())))
+    mag_value = list(map(np.float32, list(mag_per_azimuth.values())))
+    # norrmalización de la magnitud a 0°
+    mag_ref = mag_value[0]
+    mag_value_norm = np.array([])
+    for mag in mag_value:
+        mag_value_norm = np.append(mag_value_norm, mag - mag_ref)
+    # print(azimuth_value)
+    # print(mag_value)
+    # print(mag_value_norm)
+    
+        
+    # print(mag_per_azimuth)
+    
+if __name__ == "__main__":
+    main()
