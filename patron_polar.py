@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from respuesta_frecuencia import get_data_smaart, find_value
 from suavizado import suavizado
 
@@ -59,19 +59,22 @@ def main():
         mag_per_azimuth[azimuth] = sum_energy(tf_ecm8000[azimuth][0], tf_ecm8000[azimuth][1], 1000, 3)
     
     # separacion en dos arrays uno con los angulos y otro con las magnitudes
-    azimuth_value = list(map(int, list(mag_per_azimuth.keys())))
-    mag_value = list(map(np.float32, list(mag_per_azimuth.values())))
-    # norrmalización de la magnitud a 0°
-    mag_ref = mag_value[0]
+    azimuth_values = list(map(int, list(mag_per_azimuth.keys())))
+    mag_values = list(map(np.float32, list(mag_per_azimuth.values())))
+    # normalización de la magnitud a 0°
+    mag_ref = mag_values[0]
     mag_value_norm = np.array([])
-    for mag in mag_value:
+    for mag in mag_values:
         mag_value_norm = np.append(mag_value_norm, mag - mag_ref)
-    # print(azimuth_value)
-    # print(mag_value)
-    # print(mag_value_norm)
     
-        
-    # print(mag_per_azimuth)
+    azimuth_values = azimuth_values + [195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360]
+    mag_lob_rest = mag_value_norm[::-1]
+    mag_lob_rest = np.delete(mag_lob_rest, 0)
+    mag_value_norm = np.append(mag_value_norm, mag_lob_rest)
+    print(azimuth_values)
+    print(mag_value_norm)
+    
+
     
 if __name__ == "__main__":
     main()
