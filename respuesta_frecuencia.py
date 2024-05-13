@@ -67,7 +67,7 @@ def get_data_smaart(path, file):
 
 
 def main():
-    frequency, magnitude, phase = get_data_smaart("datos", "rta_freq_sm57.txt")
+    frequency, magnitude, phase = get_data_smaart("datos/rta_freq", "rta_freq_ecm8000.txt")
 
     # Valor mas cercano en frecuencia a 1000 Hz
     index_ref, freq_ref = find_value(frequency, 1000)
@@ -92,14 +92,15 @@ def main():
     size_y = 5 #ancho en pulgadas
     size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea
     fig = plt.figure(figsize=(size_x, size_y))
-    plt.semilogx(frequency, magnitude_norm)
+    plt.semilogx(frequency, magnitude_norm, label="ECM8000")
     plt.xticks(f_xvalues, f_xticks, rotation=45)
     plt.xlim(20, 20000)
     plt.ylim(-10, 10)
     plt.xlabel('Frecuencia [Hz]')
     plt.ylabel('Magnitud [dB]')
+    plt.legend(loc="upper right")
     plt.grid()
-    plt.savefig("img/rta_freq_sm57.png")
+    plt.savefig("img/rta_freq/rta_freq_ecm8000.png")
 
 if __name__ == '__main__':
     main()
