@@ -19,6 +19,8 @@ def sum_energy(frequency, magnitude, f_central, oct):
         ampsmooth_db = np.zeros(np.size(magnitude))
         finf = f_central / pow(2, 1 / (2 * oct))  # calcula el corte inferior
         fsup = f_central * pow(2, 1 / (2 * oct))  # calcula el corte superior
+        print("f_inf: ", finf)
+        print("f_sup: ", fsup)
         
         idx = np.logical_and(
                 frequency >= finf, frequency <= fsup
@@ -26,6 +28,8 @@ def sum_energy(frequency, magnitude, f_central, oct):
         
         energy = pow(10, magnitude[idx] / 10)
         mag_avg = 10 * np.log10(sum(energy) / len(energy))
+        
+        print(mag_avg)
         
         return mag_avg
 
@@ -56,7 +60,7 @@ def main():
     for azimuth in azimuth_list:
         # magnitudes = tf_ecm8000[azimuth]
         # for tf in tf_ecm8000:
-        mag_per_azimuth[azimuth] = sum_energy(tf_ecm8000[azimuth][0], tf_ecm8000[azimuth][1], 1000, 3)
+        mag_per_azimuth[azimuth] = sum_energy(tf_ecm8000[azimuth][0], tf_ecm8000[azimuth][1], 63, 3)
     
     # separacion en dos arrays uno con los angulos y otro con las magnitudes
     azimuth_values = list(map(int, list(mag_per_azimuth.keys())))
@@ -73,6 +77,30 @@ def main():
     mag_value_norm = np.append(mag_value_norm, mag_lob_rest)
     print(azimuth_values)
     print(mag_value_norm)
+    azimuth_values = np.deg2rad(azimuth_values)
+    print(azimuth_values)
+    
+    # Define the directivity pattern for a hypothetical microphone
+    # theta = np.linspace(0, 2*np.pi, 1000)  # angle in radians
+    theta = azimuth_values
+    # r = np.abs(np.sin(theta))  # directivity pattern
+    r = mag_value_norm
+
+    # Create the polar plot
+    plt.figure()
+    ax = plt.subplot( polar=True)
+    ax.plot(theta, r)
+
+    # Set the title and labels
+    ax.set_title('Microphone Directivity Pattern')
+    ax.set_rlim(-10, 1)
+    ax.set_theta_offset(np.pi/2)
+    ax.set_rlabel_position(-22.5)  # Move radial labels away from plotted line
+    ax.grid(True)
+
+
+    plt.show()
+
     
 
     
