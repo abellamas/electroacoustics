@@ -57,10 +57,11 @@ def main():
     path = "datos/patron_polar"
     measure = "ECM8000_TF_0"
     tf_data = load_tf(path, measure, angles)
-    #100, 250, 500
-    #1000, 2000, 8000
-    #10000, 16000, 20000
-    frequencies = [500, 8000, 20000]
+    
+    # frequencies =   [100, 1000, 10000]
+    # frequencies = [250, 2000, 8000]
+    frequencies = [500, 8000, 16000]    
+
     magnitudes = []
     
     for freq in frequencies:
@@ -76,8 +77,8 @@ def main():
     ax.plot(angles, magnitudes[1], 'g-', label=f"{int(frequencies[1]/1000)} kHz")
     ax.plot(angles, magnitudes[2], 'b-.', label=f"{int(frequencies[2]/1000)} kHz")
     # Set the title and labels
-    ax.set_title('ECM8000')
-    ax.set_rlim(-10, 1)
+    ax.set_title(measure[:-5])
+    ax.set_rlim(-30, 1)
     ax.set_theta_offset(np.pi/2)
     ax.set_rlabel_position(-22.5)  # Move radial labels away from plotted line
     ax.grid(True)
