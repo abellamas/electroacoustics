@@ -69,6 +69,7 @@ def get_data_smaart(path, file):
 def list_files_in_directory(directory):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
+
 def main():
     
     # Usage
