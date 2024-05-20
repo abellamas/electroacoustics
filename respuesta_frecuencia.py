@@ -71,46 +71,54 @@ def list_files_in_directory(directory):
 
 
 def main():
+    path = "datos/rta_freq"
     
-    # Usage
-    files = list_files_in_directory("datos/rta_freq")
-
-    for rta in files:
+    labels = ["SM57"]
     
-        frequency, magnitude, phase = get_data_smaart("datos/rta_freq", rta)
+    f0, m0, p0 = get_data_smaart(path, "rta_freq_sm57.txt")
+    # f180, m180, p180 = get_data_smaart(path, "ECM8000_TF_0_180.txt")
 
-        # Valor mas cercano en frecuencia a 1000 Hz
-        index_ref, freq_ref = find_value(frequency, 1000)
+    magnitudes = [m0]
+    
+    frequency = f0
+    
+    size_y = 5 #alto en pulgadas del lienzo
+    size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea para ancho lienzo 
+    
+    index_ref, freq_ref = find_value(frequency, 1000) # donde tomar la referencia
+    index_20, f_value_20 = find_value(frequency, 20) # indice inf
+    index_20k, f_value_20k = find_value(frequency, 20000) # indice sup
+    frequency = frequency[index_20:index_20k+1] # recorte de f entre inf y sup
+    mag_ref = m0[index_ref] #mag de referencia
+    
+    fig = plt.figure(figsize=(size_x, size_y))
+    
+    for i, mag in enumerate(magnitudes):
+        print(labels[i], mag)
+        mag = mag[index_20:index_20k+1] # recorte de m entre inf y sup
+        mag = suavizado(frequency, mag, 12) #suavizado de magnitudes
 
-        magnitude = suavizado(frequency, magnitude, 12)
-        mag_ref = magnitude[index_ref]
-        index_20, f_value_20 = find_value(frequency, 20)
-        index_20k, f_value_20k = find_value(frequency, 20000)
-        frequency = frequency[index_20:index_20k+1]
-        magnitude = magnitude[index_20:index_20k+1]
+        mag_norm = np.array([]) 
 
-        magnitude_norm = np.array([])
-
-        for m in magnitude:
-            magnitude_norm = np.append(magnitude_norm, m-mag_ref)
+        for m in mag:
+            mag_norm = np.append(mag_norm, m-mag_ref)
             
-        f_xvalues = [20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000]
-        f_xticks = ["20", "", "", "", "", "", "", "", "100", "", "", "", "", "", "", "", "", "1k", "", "", "", "", "", "", "", "", "10k", "20k"]
-
+        # mag_norm = mag
         # Graficos con matplotlib.pyplot
-
-        size_y = 5 #ancho en pulgadas
-        size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea
-        fig = plt.figure(figsize=(size_x, size_y))
-        plt.semilogx(frequency, magnitude_norm, label=rta[9:-4])
-        plt.xticks(f_xvalues, f_xticks, rotation=45)
-        plt.xlim(20, 20000)
-        plt.ylim(-10, 10)
-        plt.xlabel('Frecuencia [Hz]')
-        plt.ylabel('Magnitud [dB]')
-        plt.legend(loc="upper right")
-        plt.grid()
-        plt.savefig(f'img/rta_freq/{rta[0:-4]}.png')
+        plt.semilogx(frequency, mag_norm, label = labels[i])
+        
+    
+    f_xvalues = [20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000]
+    f_xticks = ["20", "", "", "", "", "", "", "", "100", "", "", "", "", "", "", "", "", "1k", "", "", "", "", "", "", "", "", "10k", "20k"]
+    
+    plt.xticks(f_xvalues, f_xticks, rotation=45)
+    plt.xlim(20, 20000)
+    plt.ylim(-10, 10)
+    plt.xlabel('Frecuencia [Hz]')
+    plt.ylabel('Magnitud [dB]')
+    plt.legend(loc="upper right")
+    plt.grid()
+    plt.savefig(f'img/rta_freq/rta_freq_sm57.png')
 
 if __name__ == '__main__':
     main()
