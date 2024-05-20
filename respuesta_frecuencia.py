@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,7 +51,7 @@ def get_data_smaart(path, file):
 
     # Lectura de datos del txt, se borran las primeras columnas del .txt para facilidad
     # Frecuencia ---- Magnitud ---- Fase ---- Coherencia
-    resp_df = pd.read_csv(f'{path}/{file}', sep='\t', header=None)
+    resp_df = pd.read_csv(f'{path}/{file}', sep='\t', header=None, skiprows=2)
     resp_values = resp_df.to_numpy() # dataframe se pasa a numpy array
 
     #Separación de datos en arrays independientes
@@ -65,41 +66,51 @@ def get_data_smaart(path, file):
 
     return [frequency, magnitude, phase]
 
+def list_files_in_directory(directory):
+    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
 
 def main():
-    frequency, magnitude, phase = get_data_smaart("datos", "rta_freq_sm57.txt")
+    
+    # Usage
+    files = list_files_in_directory("datos/rta_freq")
 
-    # Valor mas cercano en frecuencia a 1000 Hz
-    index_ref, freq_ref = find_value(frequency, 1000)
+    for rta in files:
+    
+        frequency, magnitude, phase = get_data_smaart("datos/rta_freq", rta)
 
-    magnitude = suavizado(frequency, magnitude, 12)
-    mag_ref = magnitude[index_ref]
-    index_20, f_value_20 = find_value(frequency, 20)
-    index_20k, f_value_20k = find_value(frequency, 20000)
-    frequency = frequency[index_20:index_20k+1]
-    magnitude = magnitude[index_20:index_20k+1]
+        # Valor mas cercano en frecuencia a 1000 Hz
+        index_ref, freq_ref = find_value(frequency, 1000)
 
-    magnitude_norm = np.array([])
+        magnitude = suavizado(frequency, magnitude, 12)
+        mag_ref = magnitude[index_ref]
+        index_20, f_value_20 = find_value(frequency, 20)
+        index_20k, f_value_20k = find_value(frequency, 20000)
+        frequency = frequency[index_20:index_20k+1]
+        magnitude = magnitude[index_20:index_20k+1]
 
-    for m in magnitude:
-        magnitude_norm = np.append(magnitude_norm, m-mag_ref)
-        
-    f_xvalues = [20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000]
-    f_xticks = ["20", "", "", "", "", "", "", "", "100", "", "", "", "", "", "", "", "", "1k", "", "", "", "", "", "", "", "", "10k", "20k"]
+        magnitude_norm = np.array([])
 
-    # Graficos con matplotlib.pyplot
+        for m in magnitude:
+            magnitude_norm = np.append(magnitude_norm, m-mag_ref)
+            
+        f_xvalues = [20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000]
+        f_xticks = ["20", "", "", "", "", "", "", "", "100", "", "", "", "", "", "", "", "", "1k", "", "", "", "", "", "", "", "", "10k", "20k"]
 
-    size_y = 5 #ancho en pulgadas
-    size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea
-    fig = plt.figure(figsize=(size_x, size_y))
-    plt.semilogx(frequency, magnitude_norm)
-    plt.xticks(f_xvalues, f_xticks, rotation=45)
-    plt.xlim(20, 20000)
-    plt.ylim(-10, 10)
-    plt.xlabel('Frecuencia [Hz]')
-    plt.ylabel('Magnitud [dB]')
-    plt.grid()
-    plt.savefig("img/rta_freq_sm57.png")
+        # Graficos con matplotlib.pyplot
+
+        size_y = 5 #ancho en pulgadas
+        size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea
+        fig = plt.figure(figsize=(size_x, size_y))
+        plt.semilogx(frequency, magnitude_norm, label=rta[9:-4])
+        plt.xticks(f_xvalues, f_xticks, rotation=45)
+        plt.xlim(20, 20000)
+        plt.ylim(-10, 10)
+        plt.xlabel('Frecuencia [Hz]')
+        plt.ylabel('Magnitud [dB]')
+        plt.legend(loc="upper right")
+        plt.grid()
+        plt.savefig(f'img/rta_freq/{rta[0:-4]}.png')
 
 if __name__ == '__main__':
     main()
