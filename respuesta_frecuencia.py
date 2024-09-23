@@ -71,11 +71,21 @@ def list_files_in_directory(directory):
 
 
 def main():
-    path = "datos/rta_freq"
+    path = "datos/rta_freq/puk_filter"
     
-    labels = ["SM57 0°", "SM57 180°"]
-    f0, m0, p0 = get_data_smaart(path, "SM57_TF_0_0.txt")
-    f180, m180, p180 = get_data_smaart(path, "SM57_TF_0_180.txt")
+    labels = ["bell 14k amplio", "bell 14k angosto"]
+    # labels = ["Rta plana"]
+    trans_flat = get_data_smaart(path, "rta plana.txt")
+    # transf_0 = get_data_smaart(path, "bell 3k7 broad.txt")
+    # transf_1 = get_data_smaart(path, "bell 3k7 sharp.txt")
+    # transf_0 = get_data_smaart(path, "bell 5k broad.txt")
+    # transf_1 = get_data_smaart(path, "bell 5k sharp.txt")
+    # transf_0 = get_data_smaart(path, "bell 7k5 broad.txt")
+    # transf_1 = get_data_smaart(path, "bell 7k5 sharp.txt")
+    # transf_0 = get_data_smaart(path, "bell 9k2 broad.txt")
+    # transf_1 = get_data_smaart(path, "bell 9k2 sharp.txt")
+    transf_0 = get_data_smaart(path, "bell 13k5 broad.txt")
+    transf_1 = get_data_smaart(path, "bell 13k5 sharp.txt")
     
     # labels = ["ECM8000 0°", "ECM8000 90°", "ECM8000 180°"]
     # labels = ["ECM8000 0°", "ECM8000 180°"]
@@ -83,9 +93,9 @@ def main():
     # # f45, m45, p45 = get_data_smaart(path, "ECM8000_TF_0_90.txt")
     # f180, m180, p180 = get_data_smaart(path, "ECM8000_TF_0_180.txt")
 
-    magnitudes = [m0, m180]
-    
-    frequency = f0
+    magnitudes = [transf_0[1], transf_1[1]]
+    # magnitudes = [trans_flat[1]]
+    frequency = trans_flat[0]
     
     size_y = 6 #alto en pulgadas del lienzo
     size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea para ancho lienzo 
@@ -93,7 +103,7 @@ def main():
     index_20, f_value_20 = find_value(frequency, 20) # indice inf
     index_20k, f_value_20k = find_value(frequency, 20000) # indice sup
     frequency = frequency[index_20:index_20k+1] # recorte de f entre inf y sup
-    mag_ref = m0[index_ref] #mag de referencia
+    mag_ref = trans_flat[1][index_ref] #mag de referencia
     
     fig = plt.figure(figsize=(size_x, size_y))
     
@@ -118,13 +128,13 @@ def main():
     plt.xticks(f_xvalues, f_xticks, rotation=45, fontsize=12, family="arial")
     plt.yticks( fontsize=12, family="arial")   
     plt.xlim(20, 20000)
-    plt.ylim(-30, 15)
+    plt.ylim(-15, 20)
     plt.xlabel('Frecuencia [Hz]', fontsize=14, family="arial")
     plt.ylabel('Nivel relativo [dB]', fontsize=14, family="arial")
-    plt.legend(loc="upper right")
+    plt.legend(loc="lower right")
     plt.rc('legend', fontsize=14)
     plt.grid()
-    plt.savefig(f'img/rta_freq/SM57_frente_espalda.png')
+    plt.savefig(f'img/rta_freq/rta bell 14k.png')
 
 if __name__ == '__main__':
     main()
