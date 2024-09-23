@@ -74,21 +74,21 @@ def main():
     path = "datos/proximidad/SM57_PROX"
     file = "SM57_PROX"
     
-    labels = ["2 cm ", "10 cm", "20 cm"]
+    labels = ["2 cm ", "10 cm", "20 cm", "50 cm"]
     # labels = ["2 cm ", "10 cm", "20 cm", "50 cm"]
     f20, m20, p20 = get_data_smaart(path, file+f"_20MM.txt")
     f100, m100, p100 = get_data_smaart(path, file+f"_100MM.txt")
     f200, m200, p200 = get_data_smaart(path, file+f"_200MM.txt")
     f500, m500, p500 = get_data_smaart(path, file+f"_500MM.txt")
 
-    magnitudes = [m20, m100, m200]
-    # magnitudes = [m20, m100, m200, m500]
+    # magnitudes = [m20, m100, m200]
+    magnitudes = [m20, m100, m200, m500]
     frequency = f20
     
-    size_y = 5 #alto en pulgadas del lienzo
+    size_y = 6 #alto en pulgadas del lienzo
     size_x = size_y*(1+np.sqrt(5))/2 #proporcion aurea para ancho lienzo 
     
-    index_ref, freq_ref = find_value(frequency, 1000) # donde tomar la referencia
+    index_ref, freq_ref = find_value(frequency, 400) # donde tomar la referencia
     index_20, f_value_20 = find_value(frequency, 20) # indice inf
     index_20k, f_value_20k = find_value(frequency, 500) # indice sup
     frequency = frequency[index_20:index_20k+1] # recorte de f entre inf y sup
@@ -114,14 +114,16 @@ def main():
     f_xvalues = [20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000]
     f_xticks = ["20", "30", "40", "50", "60", "70", "80", "90", "100", "200", "300", "400", "500", "600", "", "", "", "1k", "", "", "", "", "", "", "", "", "10k", "20k"]
     
-    plt.xticks(f_xvalues, f_xticks, rotation=45)
+    plt.xticks(f_xvalues, f_xticks, rotation=45, fontsize=12, family="arial")
+    plt.yticks( fontsize=12, family="arial")  
     plt.xlim(20, 500)
     plt.ylim(-10, 10)
-    plt.xlabel('Frecuencia [Hz]')
-    plt.ylabel('Magnitud [dB]')
+    plt.xlabel('Frecuencia [Hz]', fontsize=14, family="arial")
+    plt.ylabel('Nivel relativo [dB]', fontsize=14, family="arial")
     plt.legend(loc="upper right")
+    plt.rc('legend', fontsize=14)
     plt.grid()
-    plt.savefig(f'img/proximidad/efecto_proximidad_SM57(2).png')
+    plt.savefig(f'img/proximidad/efecto_proximidad_SM57_norm400Hz.png')
 
 if __name__ == '__main__':
     main()

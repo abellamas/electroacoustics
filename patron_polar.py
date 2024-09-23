@@ -55,12 +55,16 @@ def polar_pattern(tf_measure, angles, frequency:int):
 def main():
     angles = list(np.arange(0,181, 15))
     path = "datos/patron_polar"
-    measure = "ECM8000_TF_0"
+    # measure = "ECM8000_TF_0"
+    measure = "SM57_TF_0"
     tf_data = load_tf(path, measure, angles)
     
     # frequencies =   [100, 1000, 10000]
     # frequencies = [250, 2000, 8000]
-    frequencies = [500, 8000, 16000]    
+    # frequencies = [500, 8000, 16000]    
+    frequencies = [63, 500, 4000]    #1
+    # frequencies = [125, 1000, 8000]    #2
+    # frequencies = [2000, 8000, 16000]    #3
 
     magnitudes = []
     
@@ -73,9 +77,10 @@ def main():
     ax = plt.subplot( polar=True)
     
     
-    ax.plot(angles, magnitudes[0], 'r--', label=f"{frequencies[0]} Hz")
-    ax.plot(angles, magnitudes[1], 'g-', label=f"{int(frequencies[1]/1000)} kHz")
+    ax.plot(angles, magnitudes[0], 'r--', label=f"{int(frequencies[0])} Hz")
+    ax.plot(angles, magnitudes[1], 'g-', label=f"{int(frequencies[1])} Hz")
     ax.plot(angles, magnitudes[2], 'b-.', label=f"{int(frequencies[2]/1000)} kHz")
+    # ax.plot(angles, magnitudes[2], 'orange', label=f"{int(frequencies[2]/1000)} kHz")
     # Set the title and labels
     ax.set_title(measure[:-5])
     ax.set_rlim(-30, 1)
